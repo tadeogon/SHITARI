@@ -58,7 +58,8 @@ android {
             )
         }
         debug {
-            applicationIdSuffix = ".debug"
+            // Versión personal: sufijo propio para instalarse al lado del Kvaesitso original
+            applicationIdSuffix = ".tadeo"
             isDebuggable = true
         }
         create("nightly") {
