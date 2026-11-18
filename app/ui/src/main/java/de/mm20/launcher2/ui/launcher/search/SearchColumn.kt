@@ -44,6 +44,7 @@ import de.mm20.launcher2.search.Location
 import de.mm20.launcher2.search.Website
 import de.mm20.launcher2.ui.component.LauncherCard
 import de.mm20.launcher2.ui.launcher.search.apps.AppResults
+import de.mm20.launcher2.ui.launcher.search.apps.rememberAppCategories
 import de.mm20.launcher2.ui.launcher.search.calculator.CalculatorResults
 import de.mm20.launcher2.ui.launcher.search.calendar.CalendarResults
 import de.mm20.launcher2.ui.launcher.search.contacts.ContactResults
@@ -135,6 +136,28 @@ fun SearchColumn(
     var selectedArticleIndex: Int by remember(query) { mutableIntStateOf(-1) }
     var selectedWebsiteIndex: Int by remember(query) { mutableIntStateOf(-1) }
 
+    // Versión personal: cajón de apps por categorías (solo con la búsqueda vacía)
+    val appTagsByKey by viewModel.appTagsByKey.collectAsState()
+    var selectedAppCategory by viewModel.selectedAppCategory
+    val shownProfileType = profiles
+        .filter { profileStates[it.type]?.hidden == false }
+        .let { it.getOrNull(selectedAppProfileIndex) ?: it.firstOrNull() }?.type
+    val drawerApps = if (profiles.size > 1) {
+        when (shownProfileType) {
+            Profile.Type.Private -> privateApps
+            Profile.Type.Work -> workApps
+            else -> apps
+        }
+    } else apps
+    val appCategories = rememberAppCategories(
+        apps = if (isSearchEmpty) drawerApps else emptyList(),
+        tagsByKey = appTagsByKey,
+    )
+    val activeAppCategory = selectedAppCategory?.takeIf { it in appCategories.categories }
+    val categorizedApps = remember(appCategories, activeAppCategory) {
+        appCategories.appsIn(activeAppCategory)
+    }
+
     val showFilters by viewModel.showFilters
 
     LaunchedEffect(profiles) {
@@ -219,11 +242,11 @@ fun SearchColumn(
                     }
                     val selectedProfile = visibleProfiles.getOrNull(selectedAppProfileIndex) ?: visibleProfiles.firstOrNull()
                     AppResults(
-                        apps = when (selectedProfile?.type) {
-                            Profile.Type.Private -> privateApps
-                            Profile.Type.Work -> workApps
-                            else -> apps
-                        },
+                        // Versión personal: apps filtradas por la categoría elegida
+                        apps = categorizedApps,
+                        categories = appCategories.categories,
+                        selectedCategory = activeAppCategory,
+                        onCategorySelected = { selectedAppCategory = it },
                         highlightedItem = bestMatch as? Application,
                         profiles = visibleProfiles,
                         profileStates = profileStates,
@@ -244,7 +267,11 @@ fun SearchColumn(
                     )
                 } else if (!isSearchEmpty || allAppsEnabled) {
                     AppResults(
-                        apps = apps,
+                        // Versión personal: categorías solo en el cajón (búsqueda vacía)
+                        apps = if (isSearchEmpty) categorizedApps else apps,
+                        categories = if (isSearchEmpty) appCategories.categories else emptyList(),
+                        selectedCategory = activeAppCategory,
+                        onCategorySelected = { selectedAppCategory = it },
                         highlightedItem = bestMatch as? Application,
                         columns = columns,
                         reverse = reverse,

@@ -42,14 +42,19 @@ import de.mm20.launcher2.searchable.SavableSearchableRepository
 import de.mm20.launcher2.searchable.VisibilityLevel
 import de.mm20.launcher2.searchactions.actions.SearchAction
 import de.mm20.launcher2.services.favorites.FavoritesService
+import de.mm20.launcher2.data.customattrs.CustomAttributesRepository
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -99,6 +104,31 @@ class SearchVM : ViewModel(), KoinComponent {
     val appResults = mutableStateListOf<Application>()
     val workAppResults = mutableStateListOf<Application>()
     val privateSpaceAppResults = mutableStateListOf<Application>()
+
+    // Versión personal: cajón de apps por categorías.
+    // Etiquetas de cada app (clave de la app -> sus etiquetas); si una app tiene etiquetas,
+    // esas son sus categorías. Si no, se usa la categoría que declara en Android.
+    private val customAttributesRepository: CustomAttributesRepository by inject()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val appTagsByKey: StateFlow<Map<String, List<String>>> = customAttributesRepository
+        .getAllTags()
+        .flatMapLatest { tags ->
+            if (tags.isEmpty()) return@flatMapLatest flowOf(emptyMap())
+            combine(tags.map { tag ->
+                customAttributesRepository.getItemsForTag(tag).map { items -> tag to items }
+            }) { pairs ->
+                val byKey = mutableMapOf<String, MutableList<String>>()
+                for ((tag, items) in pairs) {
+                    for (item in items) byKey.getOrPut(item.key) { mutableListOf() }.add(tag)
+                }
+                byKey
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
+    /** Categoría elegida en los botones del cajón (null = Todas). */
+    val selectedAppCategory = mutableStateOf<String?>(null)
 
     val appShortcutResults = mutableStateListOf<AppShortcut>()
     val fileResults = mutableStateListOf<File>()

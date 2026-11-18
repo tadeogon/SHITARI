@@ -3,6 +3,7 @@ package de.mm20.launcher2.search
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.UserHandle
 import androidx.core.content.ContextCompat
@@ -26,6 +27,13 @@ interface Application: SavableSearchable {
         get() = false
     val user: UserHandle
     val versionName: String?
+
+    /**
+     * Versión personal: categoría que la app declara en Android (ApplicationInfo.category),
+     * usada para agrupar el cajón de apps. CATEGORY_UNDEFINED si no declara ninguna.
+     */
+    val appCategory: Int
+        get() = ApplicationInfo.CATEGORY_UNDEFINED
 
     override fun getPlaceholderIcon(context: Context): StaticLauncherIcon {
         return StaticLauncherIcon(

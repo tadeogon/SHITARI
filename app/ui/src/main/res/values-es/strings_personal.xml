@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Versión personal: textos del cajón de apps por categorías -->
+<resources>
+    <string name="app_category_all">Todas</string>
+    <string name="app_category_other">Otras</string>
+</resources>

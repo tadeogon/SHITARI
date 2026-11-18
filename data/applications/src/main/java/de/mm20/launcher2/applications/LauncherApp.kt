@@ -47,6 +47,10 @@ internal data class LauncherApp(
 
     override val label: String = launcherActivityInfo.label.toString()
 
+    // Versión personal: categoría declarada por la app (para el cajón por categorías)
+    override val appCategory: Int
+        get() = launcherActivityInfo.applicationInfo.category
+
     /**
      * Cached result of the normalized label.
      * First string is the normalizer ID

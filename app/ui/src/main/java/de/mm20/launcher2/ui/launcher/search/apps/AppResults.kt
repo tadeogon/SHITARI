@@ -50,6 +50,10 @@ fun LazyListScope.AppResults(
     columns: Int,
     reverse: Boolean,
     showList: Boolean,
+    // Versión personal: botones de categorías arriba del cajón (vacío = sin botones)
+    categories: List<String> = emptyList(),
+    selectedCategory: String? = null,
+    onCategorySelected: (String?) -> Unit = {},
 ) {
 
     val profileIndex by derivedStateOf {
@@ -63,12 +67,12 @@ fun LazyListScope.AppResults(
         profileStates[selectedProfileType]?.locked == true
     }
 
-    val before = if (profiles.size > 1) {
+    val before = if (profiles.size > 1 || categories.isNotEmpty()) {
          @Composable {
             Column(
                 verticalArrangement = if (reverse) Arrangement.BottomReversed else Arrangement.Top,
             ) {
-                PrimaryScrollableTabRow(
+                if (profiles.size > 1) PrimaryScrollableTabRow(
                     selectedTabIndex = profileIndex,
                     containerColor = Color.Transparent,
                     edgePadding = 16.dp,
@@ -112,8 +116,18 @@ fun LazyListScope.AppResults(
                     }
                 }
 
+                if (categories.isNotEmpty() && !isProfileLocked) {
+                    AppCategoryChips(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = onCategorySelected,
+                    )
+                }
+
                 if (!showList || isProfileLocked) {
-                    HorizontalDivider()
+                    // Versión personal: separador oscuro cuando están los botones de categorías
+                    if (categories.isNotEmpty()) HorizontalDivider(color = appCategoryLineColor())
+                    else HorizontalDivider()
                 }
 
                 if (selectedProfile != null && selectedProfile?.type != Profile.Type.Personal) {
