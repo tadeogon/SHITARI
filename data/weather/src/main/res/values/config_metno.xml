@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Versión personal: activa el proveedor de clima MET Norway (api.met.no), que es global
+        y es el predeterminado del código. Sus reglas de uso piden un contacto en el User-Agent
+        de cada pedido; sin este dato el proveedor no aparece y solo queda Bright Sky (solo Alemania).
+        Ver docs/docs/developer-guide/external-apis/weather.md
+    -->
+    <string name="metno_contact" translatable="false">https://github.com/tadeogon/Kvaesitso</string>
+</resources>
