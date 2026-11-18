@@ -8,8 +8,12 @@ param([switch]$SoloInstalar)
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
-# Java 17 es la version que usa el proyecto (igual que su compilacion oficial)
-$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot'
+# Java 17 es la version que usa el proyecto (igual que su compilacion oficial).
+# Se busca la carpeta mas nueva de Java 17, porque cambia de nombre con cada actualizacion.
+$jdk = Get-ChildItem 'C:\Program Files\Eclipse Adoptium' -Directory -Filter 'jdk-17*' -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if (-not $jdk) { throw 'No encuentro Java 17 en C:\Program Files\Eclipse Adoptium' }
+$env:JAVA_HOME = $jdk.FullName
 
 $paquete = 'de.mm20.launcher2.tadeo'
 $apk = 'app\app\build\outputs\apk\default\debug\app-default-debug.apk'
