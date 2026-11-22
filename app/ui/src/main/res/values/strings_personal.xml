@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Versión personal: textos del cajón de apps por categorías -->
 <resources>
-    <string name="app_category_all">All</string>
+    <string name="app_category_game">Games</string>
+    <string name="app_category_audio">Music &amp; audio</string>
+    <string name="app_category_video">Video</string>
+    <string name="app_category_image">Images</string>
+    <string name="app_category_social">Social</string>
+    <string name="app_category_news">News</string>
+    <string name="app_category_maps">Maps</string>
+    <string name="app_category_productivity">Productivity</string>
+    <string name="app_category_accessibility">Accessibility</string>
     <string name="app_category_other">Other</string>
 </resources>

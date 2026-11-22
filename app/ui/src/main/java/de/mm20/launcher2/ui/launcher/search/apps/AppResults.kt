@@ -44,16 +44,14 @@ fun LazyListScope.AppResults(
     showProfileLockControls: Boolean = false,
     onProfileLockChange: ((Profile, Boolean) -> Unit)? = null,
     apps: List<Application>,
+    // Versión personal: grupos del cajón (null = lista plana, por ejemplo al buscar).
+    groups: List<AppGroup>? = null,
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
     highlightedItem: Application? = null,
     columns: Int,
     reverse: Boolean,
     showList: Boolean,
-    // Versión personal: botones de categorías arriba del cajón (vacío = sin botones)
-    categories: List<String> = emptyList(),
-    selectedCategory: String? = null,
-    onCategorySelected: (String?) -> Unit = {},
 ) {
 
     val profileIndex by derivedStateOf {
@@ -67,7 +65,7 @@ fun LazyListScope.AppResults(
         profileStates[selectedProfileType]?.locked == true
     }
 
-    val before = if (profiles.size > 1 || categories.isNotEmpty()) {
+    val before = if (profiles.size > 1) {
          @Composable {
             Column(
                 verticalArrangement = if (reverse) Arrangement.BottomReversed else Arrangement.Top,
@@ -116,18 +114,8 @@ fun LazyListScope.AppResults(
                     }
                 }
 
-                if (categories.isNotEmpty() && !isProfileLocked) {
-                    AppCategoryChips(
-                        categories = categories,
-                        selectedCategory = selectedCategory,
-                        onCategorySelected = onCategorySelected,
-                    )
-                }
-
                 if (!showList || isProfileLocked) {
-                    // Versión personal: separador oscuro cuando están los botones de categorías
-                    if (categories.isNotEmpty()) HorizontalDivider(color = appCategoryLineColor())
-                    else HorizontalDivider()
+                    HorizontalDivider()
                 }
 
                 if (selectedProfile != null && selectedProfile?.type != Profile.Type.Personal) {
@@ -223,39 +211,130 @@ fun LazyListScope.AppResults(
             }
         }
     } else null
+    val locked = isProfileLocked
+    val groupedApps = if (locked) emptyList() else groups.orEmpty()
     if (showList) {
-        ListResults(
-            key = "apps",
-            items = if (isProfileLocked) emptyList() else apps,
-            before = before?.let { { it() } },
-            selectedIndex = selectedIndex,
-            itemContent = { app, showDetails, index ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    item = app,
-                    showDetails = showDetails,
-                    onShowDetails = { onSelect(if(it) index else -1) },
-                    highlight = highlightedItem?.key == app.key
+        if (groupedApps.isNotEmpty()) {
+            // Versión personal: la cabecera (perfiles, separador, candado) va una sola vez.
+            ListResults(
+                key = "apps-before",
+                items = emptyList<Application>(),
+                before = before?.let { { it() } },
+                itemContent = { _, _, _ -> },
+                reverse = reverse,
+            )
+            var offset = 0
+            groupedApps.forEachIndexed { groupIndex, group ->
+                item(
+                    key = "apps-group-header-$groupIndex",
+                    contentType = { "apps-group-header" },
+                ) {
+                    AppGroupHeader(title = group.title, reverse = reverse)
+                }
+                val groupOffset = offset
+                val localSelectedIndex = selectedIndex - groupOffset
+                ListResults(
+                    key = "apps-group-$groupIndex",
+                    items = group.apps,
+                    selectedIndex = if (localSelectedIndex in group.apps.indices) localSelectedIndex else -1,
+                    itemContent = { app, showDetails, index ->
+                        ListItem(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            item = app,
+                            showDetails = showDetails,
+                            onShowDetails = { onSelect(if (it) index + groupOffset else -1) },
+                            highlight = highlightedItem?.key == app.key
+                        )
+                    },
+                    reverse = reverse,
                 )
-            },
-            reverse = reverse,
-        )
+                offset += group.apps.size
+            }
+        } else {
+            ListResults(
+                key = "apps",
+                items = if (locked) emptyList() else apps,
+                before = before?.let { { it() } },
+                selectedIndex = selectedIndex,
+                itemContent = { app, showDetails, index ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        item = app,
+                        showDetails = showDetails,
+                        onShowDetails = { onSelect(if (it) index else -1) },
+                        highlight = highlightedItem?.key == app.key
+                    )
+                },
+                reverse = reverse,
+            )
+        }
     } else {
-        GridResults(
-            key = "apps",
-            items = if (isProfileLocked) emptyList() else apps,
-            before = before,
-            itemContent = {
-                GridItem(
-                    item = it,
-                    showLabels = LocalGridSettings.current.showLabels,
-                    highlight = it.key == highlightedItem?.key
+        if (groupedApps.isNotEmpty()) {
+            GridResults(
+                key = "apps-before",
+                items = emptyList<Application>(),
+                before = before,
+                itemContent = { },
+                columns = columns,
+                reverse = reverse,
+            )
+            groupedApps.forEachIndexed { groupIndex, group ->
+                item(
+                    key = "apps-group-header-$groupIndex",
+                    contentType = { "apps-group-header" },
+                ) {
+                    AppGroupHeader(title = group.title, reverse = reverse)
+                }
+                GridResults(
+                    key = "apps-group-$groupIndex",
+                    items = group.apps,
+                    itemContent = {
+                        GridItem(
+                            item = it,
+                            showLabels = LocalGridSettings.current.showLabels,
+                            highlight = it.key == highlightedItem?.key
+                        )
+                    },
+                    reverse = reverse,
+                    columns = columns,
                 )
-            },
-            reverse = reverse,
-            columns = columns,
-        )
+            }
+        } else {
+            GridResults(
+                key = "apps",
+                items = if (locked) emptyList() else apps,
+                before = before,
+                itemContent = {
+                    GridItem(
+                        item = it,
+                        showLabels = LocalGridSettings.current.showLabels,
+                        highlight = it.key == highlightedItem?.key
+                    )
+                },
+                reverse = reverse,
+                columns = columns,
+            )
+        }
     }
 
+}
+
+/** Título de cada grupo del cajón. */
+@Composable
+private fun AppGroupHeader(title: String, reverse: Boolean) {
+    Text(
+        text = title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = if (reverse) 4.dp else 12.dp,
+                bottom = if (reverse) 12.dp else 4.dp,
+            ),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

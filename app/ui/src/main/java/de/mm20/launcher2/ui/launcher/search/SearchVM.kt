@@ -106,8 +106,8 @@ class SearchVM : ViewModel(), KoinComponent {
     val privateSpaceAppResults = mutableStateListOf<Application>()
 
     // Versión personal: cajón de apps por categorías.
-    // Etiquetas de cada app (clave de la app -> sus etiquetas); si una app tiene etiquetas,
-    // esas son sus categorías. Si no, se usa la categoría que declara en Android.
+    // Etiquetas de cada app (clave de la app -> sus etiquetas). Si una app tiene etiquetas,
+    // la primera alfabéticamente es su categoría. Si no, se usa la categoría de Android.
     private val customAttributesRepository: CustomAttributesRepository by inject()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -126,9 +126,6 @@ class SearchVM : ViewModel(), KoinComponent {
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
-
-    /** Categoría elegida en los botones del cajón (null = Todas). */
-    val selectedAppCategory = mutableStateOf<String?>(null)
 
     val appShortcutResults = mutableStateListOf<AppShortcut>()
     val fileResults = mutableStateListOf<File>()

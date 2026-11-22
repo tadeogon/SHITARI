@@ -136,9 +136,8 @@ fun SearchColumn(
     var selectedArticleIndex: Int by remember(query) { mutableIntStateOf(-1) }
     var selectedWebsiteIndex: Int by remember(query) { mutableIntStateOf(-1) }
 
-    // Versión personal: cajón de apps por categorías (solo con la búsqueda vacía)
+    // Versión personal: cajón de apps agrupado por categorías (solo con la búsqueda vacía).
     val appTagsByKey by viewModel.appTagsByKey.collectAsState()
-    var selectedAppCategory by viewModel.selectedAppCategory
     val shownProfileType = profiles
         .filter { profileStates[it.type]?.hidden == false }
         .let { it.getOrNull(selectedAppProfileIndex) ?: it.firstOrNull() }?.type
@@ -149,14 +148,10 @@ fun SearchColumn(
             else -> apps
         }
     } else apps
-    val appCategories = rememberAppCategories(
+    val appGroups = rememberAppCategories(
         apps = if (isSearchEmpty) drawerApps else emptyList(),
         tagsByKey = appTagsByKey,
-    )
-    val activeAppCategory = selectedAppCategory?.takeIf { it in appCategories.categories }
-    val categorizedApps = remember(appCategories, activeAppCategory) {
-        appCategories.appsIn(activeAppCategory)
-    }
+    ).groups
 
     val showFilters by viewModel.showFilters
 
@@ -242,11 +237,8 @@ fun SearchColumn(
                     }
                     val selectedProfile = visibleProfiles.getOrNull(selectedAppProfileIndex) ?: visibleProfiles.firstOrNull()
                     AppResults(
-                        // Versión personal: apps filtradas por la categoría elegida
-                        apps = categorizedApps,
-                        categories = appCategories.categories,
-                        selectedCategory = activeAppCategory,
-                        onCategorySelected = { selectedAppCategory = it },
+                        apps = drawerApps,
+                        groups = appGroups,
                         highlightedItem = bestMatch as? Application,
                         profiles = visibleProfiles,
                         profileStates = profileStates,
@@ -267,11 +259,9 @@ fun SearchColumn(
                     )
                 } else if (!isSearchEmpty || allAppsEnabled) {
                     AppResults(
-                        // Versión personal: categorías solo en el cajón (búsqueda vacía)
-                        apps = if (isSearchEmpty) categorizedApps else apps,
-                        categories = if (isSearchEmpty) appCategories.categories else emptyList(),
-                        selectedCategory = activeAppCategory,
-                        onCategorySelected = { selectedAppCategory = it },
+                        // Versión personal: grupos solo en el cajón (búsqueda vacía)
+                        apps = if (isSearchEmpty) drawerApps else apps,
+                        groups = if (isSearchEmpty) appGroups else null,
                         highlightedItem = bestMatch as? Application,
                         columns = columns,
                         reverse = reverse,
