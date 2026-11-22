@@ -7,11 +7,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import de.mm20.launcher2.preferences.ui.UiSettings
 import de.mm20.launcher2.themes.ThemeRepository
 import de.mm20.launcher2.ui.locals.LocalDarkTheme
 import de.mm20.launcher2.ui.theme.colorscheme.darkColorSchemeOf
 import de.mm20.launcher2.ui.theme.colorscheme.lightColorSchemeOf
+import de.mm20.launcher2.ui.theme.neumorphism.LocalNeumorphism
+import de.mm20.launcher2.ui.theme.neumorphism.NeumorphismColors
 import de.mm20.launcher2.ui.theme.shapes.shapesOf
 import de.mm20.launcher2.ui.theme.transparency.LocalTransparencyScheme
 import de.mm20.launcher2.ui.theme.transparency.transparencySchemeOf
@@ -73,10 +76,28 @@ fun LauncherTheme(
 
     val transparencyScheme = transparencySchemeOf(themeTransparencies!!)
 
+    val neumorphismColors = remember(darkTheme) {
+        if (darkTheme) {
+            NeumorphismColors(
+                highlight = Color.White.copy(alpha = 0.12f),
+                shadow = Color.Black.copy(alpha = 0.48f),
+                pressedHighlight = Color.White.copy(alpha = 0.06f),
+                pressedShadow = Color.Black.copy(alpha = 0.35f),
+            )
+        } else {
+            NeumorphismColors(
+                highlight = Color.White.copy(alpha = 0.85f),
+                shadow = Color(0xFFA0A0A0).copy(alpha = 0.35f),
+                pressedHighlight = Color.White.copy(alpha = 0.55f),
+                pressedShadow = Color(0xFFA0A0A0).copy(alpha = 0.28f),
+            )
+        }
+    }
 
     CompositionLocalProvider(
         LocalDarkTheme provides darkTheme,
         LocalTransparencyScheme provides transparencyScheme,
+        LocalNeumorphism provides neumorphismColors,
     ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,

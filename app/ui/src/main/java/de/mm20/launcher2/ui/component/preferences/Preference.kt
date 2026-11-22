@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import de.mm20.launcher2.ui.theme.neumorphism.neumorphicSurface
 
 @Composable
 fun Preference(
@@ -35,9 +36,12 @@ fun Preference(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.extraSmall)
+            .neumorphicSurface(
+                shape = MaterialTheme.shapes.medium,
+                color = containerColor,
+                elevation = 4.dp,
+            )
             .clickable(enabled = enabled, onClick = onClick)
-            .background(containerColor)
             .padding(
                 start = if (icon != null) 8.dp else 16.dp,
                 end = 16.dp,

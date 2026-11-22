@@ -91,7 +91,7 @@
     <string name="missing_permission_auto_location">Se requiere acceso a la ubicación para determinar la ubicación automáticamente</string>
     <string name="missing_permission_calendar_widget">Se requiere el permiso de calendario para mostrar las próximas citas y eventos aquí</string>
     <string name="grant_permission">Otorgar</string>
-    <string name="preference_colors_bw">Blanco y negro</string>
+    <string name="preference_colors_bw">SHITARI Mono</string>
     <string name="provider_openweathermap">OpenWeatherMap</string>
     <string name="preference_cards_summary">Personalizar la apariencia de la tarjeta</string>
     <string name="alert_delete_file">El archivo %1$s se eliminará de forma permanente. ¿Continuar\?</string>
@@ -113,7 +113,7 @@
     <string name="preference_theme_light">Claro</string>
     <string name="preference_theme_dark">Oscuro</string>
     <string name="preference_screen_colors">Esquema de colores</string>
-    <string name="preference_colors_default">Por defecto</string>
+    <string name="preference_colors_default">SHITARI</string>
     <string name="preference_screen_about">Sobre</string>
     <string name="preference_version">Versión</string>
     <string name="preference_category_links">Enlaces</string>

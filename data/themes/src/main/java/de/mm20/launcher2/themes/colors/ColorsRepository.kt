@@ -74,8 +74,8 @@ class ColorsRepository(
             builtIn = true,
             name = context.getString(R.string.preference_colors_default),
             corePalette = EmptyCorePalette,
-            lightColorScheme = DefaultLightColorScheme,
-            darkColorScheme = DefaultDarkColorScheme,
+            lightColorScheme = ShitariLightColorScheme,
+            darkColorScheme = ShitariDarkColorScheme,
         )
 
 
@@ -96,7 +96,7 @@ class ColorsRepository(
             builtIn = true,
             name = context.getString(R.string.preference_colors_bw),
             corePalette = EmptyCorePalette,
-            lightColorScheme = BlackAndWhiteLightColorScheme,
-            darkColorScheme = BlackAndWhiteDarkColorScheme,
+            lightColorScheme = ShitariLightColorScheme,
+            darkColorScheme = ShitariDarkColorScheme,
         )
 }

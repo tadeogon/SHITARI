@@ -1,0 +1,88 @@
+package de.mm20.launcher2.themes.colors
+
+/**
+ * Monochrome, low-chroma palette for SHITARI.
+ *
+ * The launcher uses soft, dark surfaces with a restrained light surface for
+ * daytime use. Every role is neutral gray: no role maps to a blue accent, so
+ * the launcher stays black and gray even when the system accent is blue.
+ */
+val ShitariLightColorScheme = ColorScheme(
+    primary = color(0xFF1A1A1A),
+    onPrimary = color(0xFFFAFAFA),
+    primaryContainer = color(0xFFDCDCDC),
+    onPrimaryContainer = color(0xFF1A1A1A),
+    secondary = color(0xFF4D4D4D),
+    onSecondary = color(0xFFFAFAFA),
+    secondaryContainer = color(0xFFE0E0E0),
+    onSecondaryContainer = color(0xFF1A1A1A),
+    tertiary = color(0xFF606060),
+    onTertiary = color(0xFFFAFAFA),
+    tertiaryContainer = color(0xFFE4E4E4),
+    onTertiaryContainer = color(0xFF1A1A1A),
+    error = color(0xFF8F3D3D),
+    onError = color(0xFFFFFFFF),
+    errorContainer = color(0xFFF2DADA),
+    onErrorContainer = color(0xFF3F1A1A),
+    surfaceDim = color(0xFFD4D4D4),
+    surface = color(0xFFEAEAEA),
+    surfaceBright = color(0xFFFAFAFA),
+    surfaceContainerLowest = color(0xFFF7F7F7),
+    surfaceContainerLow = color(0xFFF1F1F1),
+    surfaceContainer = color(0xFFE6E6E6),
+    surfaceContainerHigh = color(0xFFE0E0E0),
+    surfaceContainerHighest = color(0xFFD8D8D8),
+    onSurface = color(0xFF1A1A1A),
+    onSurfaceVariant = color(0xFF4F4F4F),
+    outline = color(0xFF8E8E8E),
+    outlineVariant = color(0xFFC8C8C8),
+    inverseSurface = color(0xFF2C2C2C),
+    inverseOnSurface = color(0xFFF2F2F2),
+    inversePrimary = color(0xFFC8C8C8),
+    surfaceVariant = color(0xFFE0E0E0),
+    surfaceTint = color(0xFFEAEAEA),
+    background = color(0xFFEAEAEA),
+    onBackground = color(0xFF1A1A1A),
+    scrim = color(0xFF000000),
+)
+
+val ShitariDarkColorScheme = ColorScheme(
+    primary = color(0xFFF2F2F2),
+    onPrimary = color(0xFF161616),
+    primaryContainer = color(0xFF2C2C2C),
+    onPrimaryContainer = color(0xFFF2F2F2),
+    secondary = color(0xFFB4B4B4),
+    onSecondary = color(0xFF1A1A1A),
+    secondaryContainer = color(0xFF2C2C2C),
+    onSecondaryContainer = color(0xFFF2F2F2),
+    tertiary = color(0xFFC4C4C4),
+    onTertiary = color(0xFF1A1A1A),
+    tertiaryContainer = color(0xFF343434),
+    onTertiaryContainer = color(0xFFF2F2F2),
+    error = color(0xFFE3A6A6),
+    onError = color(0xFF3A1515),
+    errorContainer = color(0xFF5A2626),
+    onErrorContainer = color(0xFFF5DADA),
+    surfaceDim = color(0xFF101010),
+    surface = color(0xFF181818),
+    surfaceBright = color(0xFF262626),
+    surfaceContainerLowest = color(0xFF0E0E0E),
+    surfaceContainerLow = color(0xFF1A1A1A),
+    surfaceContainer = color(0xFF1E1E1E),
+    surfaceContainerHigh = color(0xFF242424),
+    surfaceContainerHighest = color(0xFF2A2A2A),
+    onSurface = color(0xFFEEEEEE),
+    onSurfaceVariant = color(0xFFB4B4B4),
+    outline = color(0xFF606060),
+    outlineVariant = color(0xFF343434),
+    inverseSurface = color(0xFFEEEEEE),
+    inverseOnSurface = color(0xFF1A1A1A),
+    inversePrimary = color(0xFF2C2C2C),
+    surfaceVariant = color(0xFF222222),
+    surfaceTint = color(0xFF181818),
+    background = color(0xFF141414),
+    onBackground = color(0xFFEEEEEE),
+    scrim = color(0xFF000000),
+)
+
+private fun color(value: Long) = StaticColor(value.toInt())

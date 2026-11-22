@@ -77,7 +77,31 @@ class ShapesRepository(
             name = context.getString(R.string.preference_shapes_default),
             baseShape = Shape(
                 corners = CornerStyle.Rounded,
-                radii = intArrayOf(12, 12, 12, 12),
+                radii = intArrayOf(20, 20, 20, 20),
+            ),
+            extraSmall = Shape(
+                radii = intArrayOf(10, 10, 10, 10),
+            ),
+            small = Shape(
+                radii = intArrayOf(14, 14, 14, 14),
+            ),
+            medium = Shape(
+                radii = intArrayOf(24, 24, 24, 24),
+            ),
+            large = Shape(
+                radii = intArrayOf(28, 28, 28, 28),
+            ),
+            largeIncreased = Shape(
+                radii = intArrayOf(30, 30, 30, 30),
+            ),
+            extraLarge = Shape(
+                radii = intArrayOf(32, 32, 32, 32),
+            ),
+            extraLargeIncreased = Shape(
+                radii = intArrayOf(36, 36, 36, 36),
+            ),
+            extraExtraLarge = Shape(
+                radii = intArrayOf(40, 40, 40, 40),
             )
         )
 
