@@ -501,6 +501,17 @@ internal class LauncherScaffoldState(
         val direction = currentGesture ?: return
 
         val gesture = config[direction] ?: return
+
+        // In Niagara drawer mode, a search gesture must open the overlay
+        // immediately. Without this guard the normal search page is moved
+        // into view for a moment before the overlay appears.
+        if (gesture.component is SearchComponent && onSearchRequested != null) {
+            currentOffset3D = Offset3D.Zero
+            currentGesture = null
+            onSearchRequested?.invoke()
+            return
+        }
+
         val controller = getAnimationController(gesture.animation) ?: return
         val wasOverThreshold = isOverThreshold(gesture.animation, currentOffset3D)
 
@@ -575,6 +586,15 @@ internal class LauncherScaffoldState(
     suspend fun onDragStopped(velocity: Velocity, disallowPageChange: Boolean = false) {
         isDragged = false
         if (isLocked || currentZOffset > 0f) return
+
+        val draggedGesture = currentGesture?.let { config[it] }
+        if (draggedGesture?.component is SearchComponent && onSearchRequested != null) {
+            currentOffset3D = Offset3D.Zero
+            currentGesture = null
+            onSearchRequested?.invoke()
+            return
+        }
+
         val velocity = when {
             !isAtTop && !isAtBottom -> velocity.copy(y = 0f)
             !isAtTop -> velocity.copy(y = velocity.y.coerceAtMost(0f))
