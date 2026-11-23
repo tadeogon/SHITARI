@@ -32,6 +32,7 @@ import androidx.compose.ui.zIndex
 import de.mm20.launcher2.ui.R
 import de.mm20.launcher2.ui.component.LauncherCard
 import de.mm20.launcher2.ui.launcher.sheets.ConfigureWidgetSheet
+import de.mm20.launcher2.ui.launcher.widgets.allapps.AllAppsWidget
 import de.mm20.launcher2.ui.launcher.widgets.calendar.CalendarWidget
 import de.mm20.launcher2.ui.launcher.widgets.external.AppWidget
 import de.mm20.launcher2.ui.launcher.widgets.favorites.AppsWidget
@@ -39,6 +40,7 @@ import de.mm20.launcher2.ui.launcher.widgets.music.MusicWidget
 import de.mm20.launcher2.ui.launcher.widgets.notes.NotesWidget
 import de.mm20.launcher2.ui.launcher.widgets.weather.WeatherWidget
 import de.mm20.launcher2.ui.theme.transparency.transparency
+import de.mm20.launcher2.widgets.AllAppsWidget
 import de.mm20.launcher2.widgets.AppWidget
 import de.mm20.launcher2.widgets.CalendarWidget
 import de.mm20.launcher2.widgets.AppsWidget
@@ -134,6 +136,10 @@ fun WidgetItem(
 
                     is CalendarWidget -> {
                         CalendarWidget(widget)
+                    }
+
+                    is AllAppsWidget -> {
+                        AllAppsWidget(widget)
                     }
 
                     is AppsWidget -> {

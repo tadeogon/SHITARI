@@ -26,6 +26,7 @@ import de.mm20.launcher2.ui.launcher.sheets.WidgetPickerSheet
 import de.mm20.launcher2.ui.locals.LocalDarkTheme
 import de.mm20.launcher2.ui.locals.LocalPreferDarkContentOverWallpaper
 import de.mm20.launcher2.widgets.AppWidget
+import de.mm20.launcher2.widgets.AllAppsWidget
 import de.mm20.launcher2.widgets.AppsWidget
 import de.mm20.launcher2.widgets.CalendarWidget
 import de.mm20.launcher2.widgets.MusicWidget
@@ -81,6 +82,7 @@ fun AppWidget(
                     is WeatherWidget -> it.copy(id = widget.id)
                     is MusicWidget -> it.copy(id = widget.id)
                     is CalendarWidget -> it.copy(id = widget.id)
+                    is AllAppsWidget -> it.copy(id = widget.id)
                     is AppsWidget -> it.copy(id = widget.id)
                     is NotesWidget -> it.copy(id = widget.id)
                 }

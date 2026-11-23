@@ -7,6 +7,7 @@ import android.content.pm.LauncherApps
 import android.os.Build
 import androidx.core.content.getSystemService
 import de.mm20.launcher2.widgets.CalendarWidget
+import de.mm20.launcher2.widgets.AllAppsWidget
 import de.mm20.launcher2.widgets.AppsWidget
 import de.mm20.launcher2.widgets.MusicWidget
 import de.mm20.launcher2.widgets.NotesWidget
@@ -63,8 +64,12 @@ class WidgetsService(
                 label = context.getString(R.string.widget_name_calendar),
             ),
             BuiltInWidgetInfo(
-                type = AppsWidget.Type,
+                type = AllAppsWidget.Type,
                 label = context.getString(R.string.widget_name_apps),
+            ),
+            BuiltInWidgetInfo(
+                type = AppsWidget.Type,
+                label = context.getString(R.string.widget_name_favorites),
             ),
             BuiltInWidgetInfo(
                 type = NotesWidget.Type,

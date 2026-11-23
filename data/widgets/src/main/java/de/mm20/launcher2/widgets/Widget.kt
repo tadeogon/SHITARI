@@ -52,6 +52,7 @@ sealed class Widget {
                             ?: FavoritesWidgetConfig()
                     AppsWidget(entity.id, config)
                 }
+                AllAppsWidget.Type -> AllAppsWidget(entity.id)
                 AppWidget.Type -> {
                     val config: AppWidgetConfig =
                         Json.decodeFromStringOrNull(entity.config?.takeIf { it.isNotBlank() })

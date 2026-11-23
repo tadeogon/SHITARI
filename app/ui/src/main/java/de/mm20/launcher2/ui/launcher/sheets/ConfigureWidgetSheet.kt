@@ -112,6 +112,7 @@ import de.mm20.launcher2.ui.launcher.widgets.external.AppWidgetHost
 import de.mm20.launcher2.ui.locals.LocalDarkTheme
 import de.mm20.launcher2.ui.locals.LocalPreferDarkContentOverWallpaper
 import de.mm20.launcher2.ui.settings.SettingsActivity
+import de.mm20.launcher2.widgets.AllAppsWidget
 import de.mm20.launcher2.widgets.AppWidget
 import de.mm20.launcher2.widgets.AppsWidget
 import de.mm20.launcher2.widgets.CalendarWidget
@@ -149,6 +150,7 @@ fun ConfigureWidgetSheet(
                 is WeatherWidget -> ConfigureWeatherWidget(widget, onWidgetUpdated)
                 is AppWidget -> ConfigureAppWidget(widget, onWidgetUpdated)
                 is CalendarWidget -> ConfigureCalendarWidget(widget, onWidgetUpdated)
+                is AllAppsWidget -> Unit
                 is AppsWidget -> ConfigureFavoritesWidget(widget, onWidgetUpdated)
                 is MusicWidget -> ConfigureMusicWidget(widget, onWidgetUpdated)
                 is NotesWidget -> ConfigureNotesWidget(widget, onWidgetUpdated)
@@ -686,6 +688,7 @@ fun ColumnScope.ConfigureAppWidget(
                     is WeatherWidget -> it.copy(id = widget.id)
                     is MusicWidget -> it.copy(id = widget.id)
                     is CalendarWidget -> it.copy(id = widget.id)
+                    is AllAppsWidget -> it.copy(id = widget.id)
                     is AppsWidget -> it.copy(id = widget.id)
                     is NotesWidget -> it.copy(id = widget.id)
                 }

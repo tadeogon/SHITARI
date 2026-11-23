@@ -30,7 +30,7 @@ data class AppsWidget(
     }
 
     override fun getLabel(context: Context): String {
-        return context.getString(R.string.widget_name_apps)
+        return context.getString(R.string.widget_name_favorites)
     }
 
     companion object {

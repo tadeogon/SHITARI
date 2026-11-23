@@ -76,6 +76,7 @@ import de.mm20.launcher2.ui.ktx.animateShapeAsState
 import de.mm20.launcher2.ui.theme.neumorphism.neumorphicSurface
 import de.mm20.launcher2.widgets.AppWidget
 import de.mm20.launcher2.widgets.AppWidgetConfig
+import de.mm20.launcher2.widgets.AllAppsWidget
 import de.mm20.launcher2.widgets.AppsWidget
 import de.mm20.launcher2.widgets.CalendarWidget
 import de.mm20.launcher2.widgets.MusicWidget
@@ -419,7 +420,8 @@ fun WidgetPickerSheet(
                                     WeatherWidget.Type -> WeatherWidget(id)
                                     CalendarWidget.Type -> CalendarWidget(id)
                                     MusicWidget.Type -> MusicWidget(id)
-                                    AppsWidget.Type -> AppsWidget(id)
+                                    AllAppsWidget.Type -> AllAppsWidget(id)
+                                  AppsWidget.Type -> AppsWidget(id)
                                     NotesWidget.Type -> NotesWidget(id)
                                     else -> return@clickable
                                 }
@@ -437,7 +439,8 @@ fun WidgetPickerSheet(
                                         WeatherWidget.Type -> R.drawable.light_mode_24px
                                         CalendarWidget.Type -> R.drawable.today_24px
                                         MusicWidget.Type -> R.drawable.music_note_24px
-                                        AppsWidget.Type -> R.drawable.apps_24px
+                                        AllAppsWidget.Type -> R.drawable.apps_24px
+                                  AppsWidget.Type -> R.drawable.apps_24px
                                         NotesWidget.Type -> R.drawable.sticky_note_2_24px
                                         else -> R.drawable.widgets_24px
                                     }

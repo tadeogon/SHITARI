@@ -892,6 +892,7 @@
     <string name="preference_category_enabled_plugins">Activado</string>
     <string name="preference_category_installed_plugins">Instalado</string>
     <string name="widget_name_apps">Aplicaciones</string>
+    <string name="widget_name_favorites">Favoritos</string>
     <string name="preference_clockwidget_smartspacer">Gestionado por Smartspacer</string>
     <string name="preference_smartspacer_integration">Smartspacer</string>
     <string name="preference_smartspacer_integration_description">Smartspacer es un widget de código abierto inspirado en De un vistazo. Si se instala, se puede integrar en la zona dinámica del widget del reloj</string>
