@@ -102,6 +102,7 @@ import de.mm20.launcher2.ui.component.SearchBarLevel
 import de.mm20.launcher2.ui.ktx.toPixels
 import de.mm20.launcher2.ui.launcher.SharedLauncherActivity
 import de.mm20.launcher2.ui.launcher.helper.WallpaperBlur
+import de.mm20.launcher2.ui.launcher.niagara.NiagaraEdgeHandle
 import de.mm20.launcher2.ui.launcher.scaffold.animation.Offset3D
 import de.mm20.launcher2.ui.launcher.scaffold.animation.PushScaffoldAnimationController
 import de.mm20.launcher2.ui.launcher.scaffold.animation.RubberbandScaffoldAnimationController
@@ -970,6 +971,7 @@ internal class LauncherScaffoldState(
 internal fun LauncherScaffold(
     modifier: Modifier,
     config: ScaffoldConfiguration,
+    onOpenNiagara: (() -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -1415,6 +1417,15 @@ internal fun LauncherScaffold(
                         items = filterBarItems
                     )
                 }
+            }
+            if (onOpenNiagara != null &&
+                state.currentProgress == 0f &&
+                !state.isSearchBarFocused
+            ) {
+                NiagaraEdgeHandle(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    onOpen = onOpenNiagara,
+                )
             }
         }
 

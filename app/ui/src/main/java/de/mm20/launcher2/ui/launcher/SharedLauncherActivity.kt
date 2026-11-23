@@ -9,6 +9,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,6 +75,7 @@ import de.mm20.launcher2.ui.launcher.scaffold.components.SecretComponent
 import de.mm20.launcher2.ui.launcher.scaffold.components.WidgetsComponent
 import de.mm20.launcher2.ui.launcher.sheets.LauncherBottomSheetManager
 import de.mm20.launcher2.ui.launcher.sheets.LauncherBottomSheets
+import de.mm20.launcher2.ui.launcher.niagara.NiagaraOverlay
 import de.mm20.launcher2.ui.launcher.sheets.LocalBottomSheetManager
 import de.mm20.launcher2.ui.launcher.transitions.EnterHomeTransition
 import de.mm20.launcher2.ui.launcher.transitions.EnterHomeTransitionManager
@@ -187,6 +194,8 @@ abstract class SharedLauncherActivity(
                                 window.setDimAmount(0f)
                             }
                         }*/
+
+                        var showNiagara by rememberSaveable { mutableStateOf(false) }
 
                         val enterTransitionProgress = remember { mutableStateOf(100f) }
                         var enterTransition by remember {
@@ -413,6 +422,7 @@ abstract class SharedLauncherActivity(
 
                             LauncherScaffold(
                                 config = config,
+                                onOpenNiagara = { showNiagara = true },
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .graphicsLayer {
@@ -423,6 +433,18 @@ abstract class SharedLauncherActivity(
                                         alpha = enterTransitionProgress.value * 0.01f
                                     }
                             )
+
+                            AnimatedVisibility(
+                                visible = showNiagara,
+                                enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+                                exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                                modifier = Modifier.fillMaxSize(),
+                            ) {
+                                NiagaraOverlay(
+                                    onClose = { showNiagara = false },
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
 
                             SnackbarHost(
                                 snackbarHostState,

@@ -11,4 +11,8 @@
     <string name="app_category_productivity">Productivity</string>
     <string name="app_category_accessibility">Accessibility</string>
     <string name="app_category_other">Other</string>
+    <string name="niagara_open">Open app list</string>
+    <string name="niagara_close">Close</string>
+    <string name="niagara_no_apps">No apps found</string>
+    <string name="niagara_jump_to">Jump to %1$s</string>
 </resources>
