@@ -15,4 +15,12 @@
     <string name="niagara_close">Cerrar</string>
     <string name="niagara_no_apps">No se encontraron apps</string>
     <string name="niagara_jump_to">Ir a %1$s</string>
+    <string name="preference_organize_apps">Organizar apps</string>
+    <string name="preference_organize_apps_summary">Cambiar etiquetas y categorías</string>
+    <string name="preference_app_drawer_style">Estilo del cajón de apps</string>
+    <string name="preference_app_drawer_style_kvaesitso">Kvaesitso</string>
+    <string name="preference_app_drawer_style_niagara">Niagara</string>
+    <string name="preference_app_drawer_grouping">Agrupar apps</string>
+    <string name="preference_app_drawer_grouping_categories">Por categoría</string>
+    <string name="preference_app_drawer_grouping_alphabetical">Por abecedario</string>
 </resources>

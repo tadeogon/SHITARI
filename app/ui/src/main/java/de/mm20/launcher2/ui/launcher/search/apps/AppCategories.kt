@@ -20,6 +20,8 @@ import androidx.compose.ui.res.stringResource
 import de.mm20.launcher2.search.Application
 import de.mm20.launcher2.ui.R
 import java.text.Collator
+import java.text.Normalizer
+import java.util.Locale
 
 /** Un grupo del cajón: título visible y sus apps, ya ordenadas. */
 data class AppGroup(
@@ -71,7 +73,50 @@ class AppCategories(
 
             return AppCategories(groups)
         }
+
+        fun alphabetical(apps: List<Application>): AppCategories {
+            val collator = Collator.getInstance()
+            val locale = Locale.getDefault()
+            val appsByLetter = linkedMapOf<String, MutableList<Application>>()
+
+            for (app in apps.distinctBy { it.key }) {
+                val label = app.labelOverride ?: app.label
+                val normalized = Normalizer.normalize(label, Normalizer.Form.NFD)
+                    .replace("\\p{M}+".toRegex(), "")
+                val letter = normalized.firstOrNull()
+                    ?.uppercaseChar()
+                    ?.takeIf { it in 'A'..'Z' }
+                    ?.toString()
+                    ?: "#"
+                appsByLetter.getOrPut(letter) { mutableListOf() }.add(app)
+            }
+
+            val groups = appsByLetter.map { (letter, groupApps) ->
+                AppGroup(
+                    title = letter,
+                    apps = groupApps.sortedWith { a, b ->
+                        collator.compare(a.labelOverride ?: a.label, b.labelOverride ?: b.label)
+                    },
+                )
+            }.sortedWith { a, b ->
+                when {
+                    a.title == "#" && b.title != "#" -> 1
+                    b.title == "#" && a.title != "#" -> -1
+                    else -> collator.compare(a.title, b.title)
+                }
+            }
+
+            return AppCategories(groups)
+        }
     }
+}
+
+@Composable
+fun rememberAlphabeticalAppCategories(apps: List<Application>): AppCategories {
+    val state = remember(apps) {
+        derivedStateOf { AppCategories.alphabetical(apps) }
+    }
+    return state.value
 }
 
 @Composable

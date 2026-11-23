@@ -74,6 +74,9 @@ data class LauncherSettingsData internal constructor(
     val searchAllApps: Boolean = true,
     val appsShowDetails: Boolean = true,
 
+    val appDrawerStyle: AppDrawerStyle = AppDrawerStyle.Kvaesitso,
+    val appDrawerGrouping: AppDrawerGrouping = AppDrawerGrouping.Categories,
+
     val fileSearchProviders: Set<String> = setOf("local"),
 
     @Deprecated("Use contactSearchProviders `local` instead")
@@ -500,4 +503,16 @@ enum class BatteryStatusVisibility {
     @SerialName("hide") Hide,
     @SerialName("show") Show,
     @SerialName("always") Always
+}
+
+@Serializable
+enum class AppDrawerStyle {
+    @SerialName("kvaesitso") Kvaesitso,
+    @SerialName("niagara") Niagara
+}
+
+@Serializable
+enum class AppDrawerGrouping {
+    @SerialName("categories") Categories,
+    @SerialName("alphabetical") Alphabetical
 }

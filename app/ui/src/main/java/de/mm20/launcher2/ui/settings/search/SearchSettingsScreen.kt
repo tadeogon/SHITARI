@@ -21,6 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import de.mm20.launcher2.plugin.PluginType
+import de.mm20.launcher2.preferences.AppDrawerGrouping
+import de.mm20.launcher2.preferences.AppDrawerStyle
 import de.mm20.launcher2.ui.R
 import de.mm20.launcher2.ui.component.DismissableBottomSheet
 import de.mm20.launcher2.ui.component.SmallMessage
@@ -77,6 +79,8 @@ fun SearchSettingsScreen() {
 
     val favorites by viewModel.favorites.collectAsStateWithLifecycle(null)
     val allApps by viewModel.allApps.collectAsStateWithLifecycle(null)
+    val appDrawerStyle by viewModel.appDrawerStyle.collectAsStateWithLifecycle(null)
+    val appDrawerGrouping by viewModel.appDrawerGrouping.collectAsStateWithLifecycle(null)
     val appShortcuts by viewModel.appShortcuts.collectAsStateWithLifecycle(null)
     val calendar by viewModel.calendarSearch.collectAsStateWithLifecycle(null)
     val places by viewModel.placesSearch.collectAsStateWithLifecycle(null)
@@ -324,12 +328,36 @@ fun SearchSettingsScreen() {
                     }
                 )
                 Preference(
-                    title = stringResource(R.string.preference_screen_tags),
-                    summary = stringResource(R.string.preference_screen_tags_summary),
+                    title = stringResource(R.string.preference_organize_apps),
+                    summary = stringResource(R.string.preference_organize_apps_summary),
                     icon = R.drawable.tag_24px,
                     onClick = {
                         backStack.add(TagsSettingsRoute)
                     }
+                )
+                ListPreference(
+                    title = stringResource(R.string.preference_app_drawer_style),
+                    items = listOf(
+                        stringResource(R.string.preference_app_drawer_style_kvaesitso) to AppDrawerStyle.Kvaesitso,
+                        stringResource(R.string.preference_app_drawer_style_niagara) to AppDrawerStyle.Niagara,
+                    ),
+                    value = appDrawerStyle,
+                    onValueChanged = {
+                        if (it != null) viewModel.setAppDrawerStyle(it)
+                    },
+                    icon = R.drawable.apps_24px
+                )
+                ListPreference(
+                    title = stringResource(R.string.preference_app_drawer_grouping),
+                    items = listOf(
+                        stringResource(R.string.preference_app_drawer_grouping_categories) to AppDrawerGrouping.Categories,
+                        stringResource(R.string.preference_app_drawer_grouping_alphabetical) to AppDrawerGrouping.Alphabetical,
+                    ),
+                    value = appDrawerGrouping,
+                    onValueChanged = {
+                        if (it != null) viewModel.setAppDrawerGrouping(it)
+                    },
+                    icon = R.drawable.sort_24px
                 )
             }
         }

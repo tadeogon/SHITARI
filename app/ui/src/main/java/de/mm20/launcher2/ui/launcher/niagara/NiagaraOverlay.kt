@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -57,6 +60,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.boundsInRoot
@@ -64,6 +69,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -216,6 +222,9 @@ fun NiagaraOverlay(
                 ?.let { (it as NiagaraEntry.Header).letter }
         }
     }
+    var pressedLetter by remember { mutableStateOf<String?>(null) }
+    val activeLetter = pressedLetter ?: currentLetter
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(selectedType) {
         if (displayEntries.isNotEmpty()) {
@@ -550,6 +559,12 @@ fun NiagaraOverlay(
                                                 .toInt()
                                                 .coerceIn(0, 25)
                                             val key = ('A' + index).toString()
+                                            if (pressedLetter != key) {
+                                                pressedLetter = key
+                                                haptic.performHapticFeedback(
+                                                    HapticFeedbackType.TextHandleMove
+                                                )
+                                            }
                                             val target = sectionStart[key] ?: return
                                             if (target != lastTarget) {
                                                 lastTarget = target
@@ -566,6 +581,7 @@ fun NiagaraOverlay(
                                             jumpTo(change.position.y)
                                             change.consume()
                                         }
+                                        pressedLetter = null
                                     }
                                 },
                             verticalArrangement = Arrangement.SpaceBetween,
@@ -574,6 +590,15 @@ fun NiagaraOverlay(
                             for (letter in 'A'..'Z') {
                                 val key = letter.toString()
                                 val available = sectionStart.containsKey(key)
+                                val isActive = activeLetter == key
+                                val scale by animateFloatAsState(
+                                    targetValue = if (isActive) 1.35f else 1f,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessMedium,
+                                    ),
+                                    label = "alphabet-scale-$key",
+                                )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -582,11 +607,16 @@ fun NiagaraOverlay(
                                 ) {
                                     Text(
                                         text = key,
+                                        modifier = Modifier.graphicsLayer {
+                                            scaleX = scale
+                                            scaleY = scale
+                                            translationX = if (isActive) -2.dp.toPx() else 0f
+                                        },
                                         fontSize = 10.sp,
                                         lineHeight = 10.sp,
-                                        fontWeight = if (currentLetter == key) FontWeight.Bold
+                                        fontWeight = if (isActive) FontWeight.Bold
                                         else FontWeight.Normal,
-                                        color = if (currentLetter == key) {
+                                        color = if (isActive) {
                                             MaterialTheme.colorScheme.onBackground
                                         } else if (available) {
                                             MaterialTheme.colorScheme.onSurfaceVariant

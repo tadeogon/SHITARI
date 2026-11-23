@@ -52,6 +52,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -261,6 +262,8 @@ internal class LauncherScaffoldState(
     initialIsLocked: Boolean = false,
     initialIsSearchBarHidden: Boolean = false,
 ) {
+    var onSearchRequested: (() -> Unit)? = null
+
     private val rubberbandAnimationController = RubberbandScaffoldAnimationController(
         rubberbandThreshold = rubberbandThreshold,
         velocityThreshold = velocityThreshold,
@@ -657,6 +660,10 @@ internal class LauncherScaffoldState(
     }
 
     suspend fun onSearchBarTap() {
+        if (onSearchRequested != null) {
+            onSearchRequested?.invoke()
+            return
+        }
         if (currentComponent is SearchComponent) return
         openSearch()
     }
@@ -846,6 +853,10 @@ internal class LauncherScaffoldState(
     }
 
     private suspend fun openSearch() {
+        if (onSearchRequested != null) {
+            onSearchRequested?.invoke()
+            return
+        }
         if (currentComponent != null && currentComponent !is SearchComponent) {
             navigateBack(fast = true)
         }
@@ -972,6 +983,7 @@ internal fun LauncherScaffold(
     modifier: Modifier,
     config: ScaffoldConfiguration,
     onOpenNiagara: (() -> Unit)? = null,
+    onSearchRequested: (() -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -1057,6 +1069,10 @@ internal fun LauncherScaffold(
                     }
                 )
             }
+
+        SideEffect {
+            state.onSearchRequested = onSearchRequested
+        }
 
         LaunchedEffect(state.isAtTop, state.isAtBottom) {
             if (state.currentProgress > 0f && state.currentProgress < 1f) {

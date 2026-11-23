@@ -1,5 +1,7 @@
 package de.mm20.launcher2.preferences.ui
 
+import de.mm20.launcher2.preferences.AppDrawerGrouping
+import de.mm20.launcher2.preferences.AppDrawerStyle
 import de.mm20.launcher2.preferences.LauncherDataStore
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -76,6 +78,24 @@ class SearchUiSettings internal constructor(
     fun setShowAppDetails(showAppDetails: Boolean) {
         launcherDataStore.update {
             it.copy(appsShowDetails = showAppDetails)
+        }
+    }
+
+    val appDrawerStyle
+        get() = launcherDataStore.data.map { it.appDrawerStyle }.distinctUntilChanged()
+
+    fun setAppDrawerStyle(style: AppDrawerStyle) {
+        launcherDataStore.update {
+            it.copy(appDrawerStyle = style)
+        }
+    }
+
+    val appDrawerGrouping
+        get() = launcherDataStore.data.map { it.appDrawerGrouping }.distinctUntilChanged()
+
+    fun setAppDrawerGrouping(grouping: AppDrawerGrouping) {
+        launcherDataStore.update {
+            it.copy(appDrawerGrouping = grouping)
         }
     }
 

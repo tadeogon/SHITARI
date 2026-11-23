@@ -8,6 +8,8 @@ import de.mm20.launcher2.applications.AppRepository
 import de.mm20.launcher2.permissions.PermissionGroup
 import de.mm20.launcher2.permissions.PermissionsManager
 import de.mm20.launcher2.plugins.PluginService
+import de.mm20.launcher2.preferences.AppDrawerGrouping
+import de.mm20.launcher2.preferences.AppDrawerStyle
 import de.mm20.launcher2.preferences.search.CalculatorSearchSettings
 import de.mm20.launcher2.preferences.search.CalendarSearchSettings
 import de.mm20.launcher2.preferences.search.ContactSearchSettings
@@ -54,6 +56,20 @@ class SearchSettingsScreenVM : ViewModel(), KoinComponent {
 
     fun setAllApps(allApps: Boolean) {
         searchUiSettings.setAllApps(allApps)
+    }
+
+    val appDrawerStyle = searchUiSettings.appDrawerStyle
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    fun setAppDrawerStyle(style: AppDrawerStyle) {
+        searchUiSettings.setAppDrawerStyle(style)
+    }
+
+    val appDrawerGrouping = searchUiSettings.appDrawerGrouping
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    fun setAppDrawerGrouping(grouping: AppDrawerGrouping) {
+        searchUiSettings.setAppDrawerGrouping(grouping)
     }
 
     val hasCalendarPermission = permissionsManager.hasPermission(PermissionGroup.Calendar)

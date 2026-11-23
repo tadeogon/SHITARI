@@ -43,7 +43,9 @@ import de.mm20.launcher2.search.File
 import de.mm20.launcher2.search.Location
 import de.mm20.launcher2.search.Website
 import de.mm20.launcher2.ui.component.LauncherCard
+import de.mm20.launcher2.preferences.AppDrawerGrouping
 import de.mm20.launcher2.ui.launcher.search.apps.AppResults
+import de.mm20.launcher2.ui.launcher.search.apps.rememberAlphabeticalAppCategories
 import de.mm20.launcher2.ui.launcher.search.apps.rememberAppCategories
 import de.mm20.launcher2.ui.launcher.search.calculator.CalculatorResults
 import de.mm20.launcher2.ui.launcher.search.calendar.CalendarResults
@@ -88,6 +90,7 @@ fun SearchColumn(
     val hideFavs by viewModel.hideFavorites
     val favoritesEnabled by viewModel.favoritesEnabled.collectAsState(false)
     val allAppsEnabled by viewModel.allAppsEnabled.collectAsState(false)
+    val appDrawerGrouping by viewModel.appDrawerGrouping.collectAsState(initial = AppDrawerGrouping.Categories)
 
     val apps = viewModel.appResults
     val workApps = viewModel.workAppResults
@@ -148,10 +151,16 @@ fun SearchColumn(
             else -> apps
         }
     } else apps
-    val appGroups = rememberAppCategories(
-        apps = if (isSearchEmpty) drawerApps else emptyList(),
-        tagsByKey = appTagsByKey,
-    ).groups
+    val appGroups = when (appDrawerGrouping) {
+        AppDrawerGrouping.Alphabetical -> rememberAlphabeticalAppCategories(
+            apps = if (isSearchEmpty) drawerApps else emptyList(),
+        ).groups
+
+        AppDrawerGrouping.Categories -> rememberAppCategories(
+            apps = if (isSearchEmpty) drawerApps else emptyList(),
+            tagsByKey = appTagsByKey,
+        ).groups
+    }
 
     val showFilters by viewModel.showFilters
 

@@ -43,6 +43,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import de.mm20.launcher2.ktx.isAtLeastApiLevel
+import de.mm20.launcher2.preferences.AppDrawerStyle
 import de.mm20.launcher2.preferences.GestureAction
 import de.mm20.launcher2.preferences.SearchBarColors
 import de.mm20.launcher2.preferences.SearchBarStyle
@@ -160,6 +161,7 @@ abstract class SharedLauncherActivity(
                         val widgetsOnHomeScreen by viewModel.widgetsOnHomeScreen.collectAsState()
                         val wallpaperBlur by viewModel.wallpaperBlur.collectAsState()
                         val wallpaperBlurRadius by viewModel.wallpaperBlurRadius.collectAsState()
+                        val appDrawerStyle by viewModel.appDrawerStyle.collectAsState(initial = AppDrawerStyle.Kvaesitso)
 
                         val fixedRotation by viewModel.fixedRotation.collectAsState()
 
@@ -420,9 +422,15 @@ abstract class SharedLauncherActivity(
                                 }
                             }
 
+                            val openNiagara = {
+                                showNiagara = true
+                            }
+                            val niagaraStyle = appDrawerStyle == AppDrawerStyle.Niagara
+
                             LauncherScaffold(
                                 config = config,
-                                onOpenNiagara = { showNiagara = true },
+                                onOpenNiagara = if (niagaraStyle) openNiagara else null,
+                                onSearchRequested = if (niagaraStyle) openNiagara else null,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .graphicsLayer {

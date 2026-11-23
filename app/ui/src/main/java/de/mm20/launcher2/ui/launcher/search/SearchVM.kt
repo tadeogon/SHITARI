@@ -148,6 +148,10 @@ class SearchVM : ViewModel(), KoinComponent {
 
     val allAppsEnabled = searchUiSettings.allApps
 
+    val appDrawerStyle = searchUiSettings.appDrawerStyle
+
+    val appDrawerGrouping = searchUiSettings.appDrawerGrouping
+
     val showFilters = mutableStateOf(false)
 
     private val defaultFilters = searchFilterSettings.defaultFilter.stateIn(
