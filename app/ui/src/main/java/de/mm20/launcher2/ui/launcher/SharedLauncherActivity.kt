@@ -12,8 +12,12 @@ import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,6 +81,7 @@ import de.mm20.launcher2.ui.launcher.scaffold.components.WidgetsComponent
 import de.mm20.launcher2.ui.launcher.sheets.LauncherBottomSheetManager
 import de.mm20.launcher2.ui.launcher.sheets.LauncherBottomSheets
 import de.mm20.launcher2.ui.launcher.niagara.NiagaraOverlay
+import de.mm20.launcher2.ui.launcher.niagara.NiagaraTrigger
 import de.mm20.launcher2.ui.launcher.sheets.LocalBottomSheetManager
 import de.mm20.launcher2.ui.launcher.transitions.EnterHomeTransition
 import de.mm20.launcher2.ui.launcher.transitions.EnterHomeTransitionManager
@@ -198,6 +203,9 @@ abstract class SharedLauncherActivity(
                         }*/
 
                         var showNiagara by rememberSaveable { mutableStateOf(false) }
+                        var niagaraTrigger by rememberSaveable {
+                            mutableStateOf(NiagaraTrigger.SearchBar)
+                        }
 
                         val enterTransitionProgress = remember { mutableStateOf(100f) }
                         var enterTransition by remember {
@@ -422,14 +430,17 @@ abstract class SharedLauncherActivity(
                                 }
                             }
 
-                            val openNiagara = {
+                            val openNiagara = { trigger: NiagaraTrigger ->
+                                niagaraTrigger = trigger
                                 showNiagara = true
                             }
                             val niagaraStyle = appDrawerStyle == AppDrawerStyle.Niagara
 
                             LauncherScaffold(
                                 config = config,
-                                onOpenNiagara = if (niagaraStyle) openNiagara else null,
+                                onOpenNiagara = if (niagaraStyle) {
+                                    { openNiagara(NiagaraTrigger.Handle) }
+                                } else null,
                                 onSearchRequested = if (niagaraStyle) openNiagara else null,
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -444,8 +455,22 @@ abstract class SharedLauncherActivity(
 
                             AnimatedVisibility(
                                 visible = showNiagara,
-                                enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                                exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                                enter = when (niagaraTrigger) {
+                                    NiagaraTrigger.Handle ->
+                                        slideInHorizontally(initialOffsetX = { it }) + fadeIn()
+                                    NiagaraTrigger.SwipeDown ->
+                                        slideInVertically(initialOffsetY = { it }) + fadeIn()
+                                    NiagaraTrigger.SearchBar ->
+                                        fadeIn() + scaleIn(initialScale = 0.96f)
+                                },
+                                exit = when (niagaraTrigger) {
+                                    NiagaraTrigger.Handle ->
+                                        slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                                    NiagaraTrigger.SwipeDown ->
+                                        slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                                    NiagaraTrigger.SearchBar ->
+                                        fadeOut() + scaleOut(targetScale = 0.98f)
+                                },
                                 modifier = Modifier.fillMaxSize(),
                             ) {
                                 NiagaraOverlay(

@@ -104,6 +104,7 @@ import de.mm20.launcher2.ui.ktx.toPixels
 import de.mm20.launcher2.ui.launcher.SharedLauncherActivity
 import de.mm20.launcher2.ui.launcher.helper.WallpaperBlur
 import de.mm20.launcher2.ui.launcher.niagara.NiagaraEdgeHandle
+import de.mm20.launcher2.ui.launcher.niagara.NiagaraTrigger
 import de.mm20.launcher2.ui.launcher.scaffold.animation.Offset3D
 import de.mm20.launcher2.ui.launcher.scaffold.animation.PushScaffoldAnimationController
 import de.mm20.launcher2.ui.launcher.scaffold.animation.RubberbandScaffoldAnimationController
@@ -262,7 +263,7 @@ internal class LauncherScaffoldState(
     initialIsLocked: Boolean = false,
     initialIsSearchBarHidden: Boolean = false,
 ) {
-    var onSearchRequested: (() -> Unit)? = null
+    var onSearchRequested: ((NiagaraTrigger) -> Unit)? = null
 
     private val rubberbandAnimationController = RubberbandScaffoldAnimationController(
         rubberbandThreshold = rubberbandThreshold,
@@ -508,7 +509,7 @@ internal class LauncherScaffoldState(
         if (gesture.component is SearchComponent && onSearchRequested != null) {
             currentOffset3D = Offset3D.Zero
             currentGesture = null
-            onSearchRequested?.invoke()
+            onSearchRequested?.invoke(NiagaraTrigger.SwipeDown)
             return
         }
 
@@ -591,7 +592,7 @@ internal class LauncherScaffoldState(
         if (draggedGesture?.component is SearchComponent && onSearchRequested != null) {
             currentOffset3D = Offset3D.Zero
             currentGesture = null
-            onSearchRequested?.invoke()
+            onSearchRequested?.invoke(NiagaraTrigger.SwipeDown)
             return
         }
 
@@ -681,7 +682,7 @@ internal class LauncherScaffoldState(
 
     suspend fun onSearchBarTap() {
         if (onSearchRequested != null) {
-            onSearchRequested?.invoke()
+            onSearchRequested?.invoke(NiagaraTrigger.SearchBar)
             return
         }
         if (currentComponent is SearchComponent) return
@@ -826,7 +827,7 @@ internal class LauncherScaffoldState(
         // SearchComponent page opens behind the overlay.
         val searchRequested = onSearchRequested
         if (component is SearchComponent && searchRequested != null) {
-            searchRequested()
+            searchRequested(NiagaraTrigger.SearchBar)
             return
         }
 
@@ -883,7 +884,7 @@ internal class LauncherScaffoldState(
 
     private suspend fun openSearch() {
         if (onSearchRequested != null) {
-            onSearchRequested?.invoke()
+            onSearchRequested?.invoke(NiagaraTrigger.SearchBar)
             return
         }
         if (currentComponent != null && currentComponent !is SearchComponent) {
@@ -913,7 +914,7 @@ internal class LauncherScaffoldState(
         val targetComponent = config[gesture]?.component ?: return
         val searchRequested = onSearchRequested
         if (targetComponent is SearchComponent && searchRequested != null) {
-            searchRequested()
+            searchRequested(NiagaraTrigger.SearchBar)
             return
         }
         currentGesture = gesture
@@ -1018,7 +1019,7 @@ internal fun LauncherScaffold(
     modifier: Modifier,
     config: ScaffoldConfiguration,
     onOpenNiagara: (() -> Unit)? = null,
-    onSearchRequested: (() -> Unit)? = null,
+    onSearchRequested: ((NiagaraTrigger) -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -1107,14 +1108,14 @@ internal fun LauncherScaffold(
 
         SideEffect {
             state.onSearchRequested = onSearchRequested?.let { request ->
-                {
+                { trigger ->
                     scope.launch {
                         // Close the normal search page before showing the
                         // Niagara overlay, so it cannot stay open behind it.
                         if (state.currentComponent != null) {
                             state.reset()
                         }
-                        request()
+                        request(trigger)
                     }
                 }
             }
@@ -1472,7 +1473,7 @@ internal fun LauncherScaffold(
                             modifier = Modifier
                                 .matchParentSize()
                                 .pointerInput(Unit) {
-                                    detectTapGestures { state.onSearchRequested?.invoke() }
+                                    detectTapGestures { state.onSearchRequested?.invoke(NiagaraTrigger.SearchBar) }
                                 }
                         )
                     }
