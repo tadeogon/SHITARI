@@ -801,6 +801,15 @@ internal class LauncherScaffoldState(
 
         if (component.hapticFeedback) onHapticFeedback(HapticFeedbackType.LongPress)
 
+        // In Niagara drawer mode the search UI is replaced by the overlay.
+        // Intercept all search gestures here as well, otherwise the normal
+        // SearchComponent page opens behind the overlay.
+        val searchRequested = onSearchRequested
+        if (component is SearchComponent && searchRequested != null) {
+            searchRequested()
+            return
+        }
+
         if (component is SearchComponent && gesture != Gesture.TapSearchBar) {
             openSearch()
             return
@@ -881,6 +890,12 @@ internal class LauncherScaffoldState(
     }
 
     suspend fun navigateToPage(gesture: Gesture) {
+        val targetComponent = config[gesture]?.component ?: return
+        val searchRequested = onSearchRequested
+        if (targetComponent is SearchComponent && searchRequested != null) {
+            searchRequested()
+            return
+        }
         currentGesture = gesture
         val anim = config[gesture]?.animation ?: return
         val component = config[gesture]!!.component
@@ -1071,7 +1086,18 @@ internal fun LauncherScaffold(
             }
 
         SideEffect {
-            state.onSearchRequested = onSearchRequested
+            state.onSearchRequested = onSearchRequested?.let { request ->
+                {
+                    scope.launch {
+                        // Close the normal search page before showing the
+                        // Niagara overlay, so it cannot stay open behind it.
+                        if (state.currentComponent != null) {
+                            state.reset()
+                        }
+                        request()
+                    }
+                }
+            }
         }
 
         LaunchedEffect(state.isAtTop, state.isAtBottom) {
@@ -1391,33 +1417,46 @@ internal fun LauncherScaffold(
                             .asPaddingValues()
                     )
             ) {
-                LauncherSearchBar(
+                Box(
                     modifier = Modifier
                         .widthIn(max = 916.dp)
                         .align(
                             if (config.searchBarPosition == SearchBarPosition.Top) Alignment.TopCenter
                             else Alignment.BottomCenter
                         ),
-                    searchBarOffset = { state.currentSearchBarOffset.roundToInt() },
-                    style = config.searchBarStyle,
-                    focused = state.isSearchBarFocused,
-                    actions = searchActions,
-                    level = { state.searchBarLevel },
-                    bottomSearchBar = config.searchBarPosition == SearchBarPosition.Bottom,
-                    onFocusChange = {
-                        if (it) {
-                            scope.launch { state.onSearchBarTap() }
-                        }
-                        state.isSearchBarFocused = it
-                    },
-                    onKeyboardActionGo = if (launchOnEnter) {
-                        { searchVM.launchBestMatchOrAction(activity) }
-                    } else null,
-                    highlightedAction = highlightedResult as? SearchAction,
-                    darkColors = config.darkSearchBar,
-                    isSearchOpen = state.currentComponent is SearchComponent && state.isSettledOnSecondaryPage ||
-                            config.homeComponent is SearchComponent && !state.isSettledOnSecondaryPage,
-                )
+                ) {
+                    LauncherSearchBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        searchBarOffset = { state.currentSearchBarOffset.roundToInt() },
+                        style = config.searchBarStyle,
+                        focused = state.isSearchBarFocused,
+                        actions = searchActions,
+                        level = { state.searchBarLevel },
+                        bottomSearchBar = config.searchBarPosition == SearchBarPosition.Bottom,
+                        onFocusChange = {
+                            if (it) {
+                                scope.launch { state.onSearchBarTap() }
+                            }
+                            state.isSearchBarFocused = it
+                        },
+                        onKeyboardActionGo = if (launchOnEnter) {
+                            { searchVM.launchBestMatchOrAction(activity) }
+                        } else null,
+                        highlightedAction = highlightedResult as? SearchAction,
+                        darkColors = config.darkSearchBar,
+                        isSearchOpen = state.currentComponent is SearchComponent && state.isSettledOnSecondaryPage ||
+                                config.homeComponent is SearchComponent && !state.isSettledOnSecondaryPage,
+                    )
+                    if (onSearchRequested != null) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .pointerInput(Unit) {
+                                    detectTapGestures { state.onSearchRequested?.invoke() }
+                                }
+                        )
+                    }
+                }
             }
             if (isFilterBarVisible) {
                 Box(
@@ -1439,7 +1478,9 @@ internal fun LauncherScaffold(
                 !state.isSearchBarFocused
             ) {
                 NiagaraEdgeHandle(
-                    modifier = Modifier.align(Alignment.CenterEnd),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 24.dp),
                     onOpen = onOpenNiagara,
                 )
             }

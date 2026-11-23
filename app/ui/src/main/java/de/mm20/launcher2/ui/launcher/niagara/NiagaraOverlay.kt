@@ -133,6 +133,10 @@ fun NiagaraOverlay(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
+    val closeOverlay = {
+        focusManager.clearFocus(force = true)
+        onClose()
+    }
 
     var query by rememberSaveable { mutableStateOf("") }
     var selectedProfileIndex by rememberSaveable { mutableIntStateOf(-1) }
@@ -237,7 +241,7 @@ fun NiagaraOverlay(
             query = ""
             focusManager.clearFocus()
         } else {
-            onClose()
+            closeOverlay()
         }
     }
 
@@ -289,7 +293,7 @@ fun NiagaraOverlay(
                         total += dragAmount
                         if (total > 96.dp.toPx()) {
                             total = 0f
-                            onClose()
+                            closeOverlay()
                         }
                     }
                 )
@@ -328,7 +332,7 @@ fun NiagaraOverlay(
                     )
                 }
                 IconButton(
-                    onClick = onClose,
+                    onClick = closeOverlay,
                     modifier = Modifier.padding(top = 2.dp),
                 ) {
                     Icon(
@@ -533,7 +537,7 @@ fun NiagaraOverlay(
                                     NiagaraAppRow(
                                         app = entry.app,
                                         onClick = {
-                                            if (it) onClose()
+                                            if (it) closeOverlay()
                                         }
                                     )
                                 }
